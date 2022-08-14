@@ -1,6 +1,9 @@
-SRC = game.c
-
+SRC = new.cpp
 EXEC = game
+CC = g++
 
 all: $(SRC)
-	gcc $(SRC) `sdl2-config --cflags --libs` -o $(EXEC)
+	$(CC) $(SRC) `sdl2-config --cflags --libs` -o $(EXEC)
+
+clean:
+	rm $(EXEC)
