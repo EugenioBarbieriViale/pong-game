@@ -9,7 +9,7 @@ class obj {
 		obj();
 		void handleEvents(SDL_Event& e);
 		void move();
-		void render(SDL_Renderer& renderer);
+		void render(SDL_Renderer* renderer);
 
 	private:
 		int x;
@@ -24,11 +24,11 @@ class obj {
 obj::obj() {
 	x = 100;
 	y = 100;
-	vx = 0;
-	vy = 0;
 }
 
 void obj::handleEvents(SDL_Event& e) {
+	vx = 0;
+	vy = 0;
 	if (e.type == SDL_KEYDOWN && e.key.repeat == 0) {
 		switch (e.key.keysym.sym) {
 			case SDLK_UP:
@@ -108,7 +108,7 @@ int main() {
 		SDL_SetRenderDrawColor(renderer, 0xFF, 0xFF, 0xFF, 0xFF);
 		SDL_RenderClear(renderer);
 
-		obj.render(*renderer);
+		obj.render(renderer);
 
 		SDL_RenderPresent(renderer);
 	}

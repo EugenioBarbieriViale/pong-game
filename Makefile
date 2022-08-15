@@ -1,4 +1,4 @@
-SRC = new.cpp
+SRC = game.cpp
 EXEC = game
 CC = g++
 
