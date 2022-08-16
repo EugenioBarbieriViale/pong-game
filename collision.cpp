@@ -7,44 +7,30 @@ const int screen_height = 700;
 class rect_a {
 	public:
 		SDL_Rect rect;
-		int vx, vy;
+		Uint8 color = 0x00;
 
 		rect_a();
 		void move();
 		void render(SDL_Renderer* renderer);
 
 	private:
-		int x = screen_width/2;
-		int y = screen_height/2;
+		int x = screen_width/2-100;
+		int y = screen_height/2-40;
 
-		static const int width = 90;
-		static const int height = 90;
+		static const int width = 70;
+		static const int height = 150;
 
 		static const int vel = 1;
 };
 
 rect_a::rect_a() {
 	rect = {x,y,width,height};
-	vx = vel;
-	vy = vel;
-}
-
-void rect_a::move() {
-	rect.x += vx;
-	rect.y += vy;
-
-	if (rect.x <= 0 || rect.x >= screen_width-rect.w) {
-		vx *= -1;
-	}
-
-	if (rect.y <= 0 || rect.y >= screen_height-rect.h) {
-		vy *= -1;
-	}
 }
 
 void rect_a::render(SDL_Renderer* renderer) {
-	SDL_SetRenderDrawColor(renderer, 0x00, 0x00, 0xFF, 0xFF);
+	SDL_SetRenderDrawColor(renderer, color, 0x00, 0xFF, 0xFF);
 	SDL_RenderFillRect(renderer, &rect);
+	color = 0x00;
 }
 
 
@@ -58,11 +44,11 @@ class rect_b {
 		void render(SDL_Renderer* renderer);
 
 	private:
-		int x = 100;
+		int x = 600;
 		int y = 200;
 
-		static const int width = 80;
-		static const int height = 80;
+		static const int width = 50;
+		static const int height = 70;
 
 		static const int vel = 1;
 };
@@ -91,35 +77,9 @@ void rect_b::render(SDL_Renderer* renderer) {
 	SDL_RenderFillRect(renderer, &rect);
 }
 
-
-bool check(SDL_Rect a, SDL_Rect b) {
-	if (a.x >= b.x && a.x <= b.x + b.w && a.y >= b.y - a.h && a.y <= b.y) {
-		return true;
-	}
-
-	if (a.x >= b.x && a.x <= b.x + b.w && a.y <= b.y + b.h && a.y >= b.y) {
-		return true;
-	}
-
-	if (a.y >= b.y && a.y <= b.y + b.h && a.x >= b.x - a.w && a.x <= b.x) {
-		return true;
-	}
-
-	if (a.y >= b.y && a.y <= b.y + b.h && a.x <= b.x - a.w && a.x >= b.x) {
-		return true;
-	}
-
-	return false;
-}
-
 bool check_collision(SDL_Rect a, SDL_Rect b) {
-	// Collision on the x-axis
-	if ((a.x >= b.x && a.x <= b.x + b.w) || (b.x >= a.x && b.x <= a.x + a.w)) {
-		// Collision on the y-axis
-		if ((a.y >= b.y && a.y <= b.y + b.h) || (b.y >= a.y && b.y <= a.y + a.h))
-			return true;
-	}
-
+	if (a.x + a.w >= b.x && a.x <= b.x + b.w && a.y + a.h >= b.y && a.y <= b.y + b.h)
+		return true;
 	return false;
 }
 
@@ -166,12 +126,10 @@ int main() {
 				run = false;
 			}
 		}
-		rect_a.move();
 		rect_b.move();
 
-		if(check_collision(rect_a.rect, rect_b.rect)) {
-			rect_a.vy *= -1;
-			rect_b.vy *= -1;
+		if (check_collision(rect_a.rect, rect_b.rect)) {
+			rect_a.color = 0xFF;
 		}
 
 		SDL_SetRenderDrawColor(renderer, 0x00, 0x00, 0x00, 0xFF);
