@@ -9,6 +9,7 @@ class player {
 	public:
 		int x = screen_width/2;
 		int y = screen_height-40;
+		static const int width = 100;
 
 		void handleEvents(SDL_Event& e);
 		void move();
@@ -16,7 +17,6 @@ class player {
 
 	private:
 		int vx;
-		static const int width = 100;
 		static const int height = 20;
 		static const int vel = 2;
 };
@@ -53,15 +53,16 @@ void player::render(SDL_Renderer* renderer) {
 // Ball class
 class ball {
 	public:
+		ball();
+		void move(player player);
+		void collision(player player);
+		void render(SDL_Renderer* renderer);
+
+	private:
 		int x = screen_width/2;
 		int y = screen_height/2;
 		static const int dim = 30;
 
-		ball();
-		void move();
-		void render(SDL_Renderer* renderer);
-
-	private:
 		int vx;
 		int vy;
 		static const int vel = 1;
@@ -72,7 +73,7 @@ ball::ball() {
 	vy = vel;
 }
 
-void ball::move() {
+void ball::move(player player) {
 	x += vx;
 	y += vy;
 
@@ -83,20 +84,16 @@ void ball::move() {
 	if (y <= 0 || y >= screen_height-dim) {
 		vy *= -1;
 	}
+
+	if (x >= player.x && x <= player.x+player.width && y > player.y-dim) {
+		vy *= -1;
+	}
 }
 
 void ball::render(SDL_Renderer* renderer) {
 	SDL_Rect rect = {x,y,dim,dim};
 	SDL_SetRenderDrawColor(renderer, 0xFF, 0x00, 0x00, 0xFF);
 	SDL_RenderFillRect(renderer, &rect);
-}
-
-void collision() {
-	if (ball.x >= player.x && ball.x <= player.x-ball.dim && ball.y >= player.y-ball.dim) {
-		printf("Collision");
-		/* vx *= -1; */ 
-		/* vy *= -1; */ 
-	}
 }
 
 int main() {
@@ -144,9 +141,7 @@ int main() {
 			player.handleEvents(e);
 		}
 		player.move();
-		ball.move();
-
-		collision();
+		ball.move(player);
 
 		SDL_SetRenderDrawColor(renderer, 0x00, 0x00, 0x00, 0xFF);
 		SDL_RenderClear(renderer);
