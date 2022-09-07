@@ -9,16 +9,16 @@ class player {
 	public:
 		int x = screen_width/2;
 		int y = screen_height-40;
+
 		static const int width = 100;
+		static const int height = 20;
+
+		int vx;
+		static const int vel = 2;
 
 		void handleEvents(SDL_Event& e);
 		void move();
 		void render(SDL_Renderer* renderer);
-
-	private:
-		int vx;
-		static const int height = 20;
-		static const int vel = 2;
 };
 
 void player::handleEvents(SDL_Event& e) {
@@ -39,14 +39,13 @@ void player::handleEvents(SDL_Event& e) {
 void player::move() {
 	x += vx;
 
-	if (x <= 0 || x >= screen_width-width) {
+	if (x <= 0 || x >= screen_width-width)
 		x -= vx;
-	}
 }
 
 void player::render(SDL_Renderer* renderer) {
 	SDL_Rect rect = {x,y,width,height};
-	SDL_SetRenderDrawColor(renderer, 0x00, 0x00, 0xFF, 0xFF);
+	SDL_SetRenderDrawColor(renderer, 0xFF, 0xFF, 0xFF, 0xFF);
 	SDL_RenderFillRect(renderer, &rect);
 }
 
@@ -54,13 +53,16 @@ void player::render(SDL_Renderer* renderer) {
 class ball {
 	public:
 		ball();
+
 		void move(player player);
 		void collision(player player);
 		void render(SDL_Renderer* renderer);
 
+		bool lost = false;
+
 	private:
 		int x = screen_width/2;
-		int y = screen_height/2;
+		int y = 60;
 		static const int dim = 30;
 
 		int vx;
@@ -74,25 +76,27 @@ ball::ball() {
 }
 
 void ball::move(player player) {
+	bool update_score = false;
+
 	x += vx;
 	y += vy;
 
-	if (x <= 0 || x >= screen_width-dim) {
+	if (x <= 0 || x >= screen_width-dim)
 		vx *= -1;
-	}
 
-	if (y <= 0 || y >= screen_height-dim) {
+	if (y <= 0)
 		vy *= -1;
-	}
 
-	if (x >= player.x && x <= player.x+player.width && y > player.y-dim) {
+	if (y >= screen_height-dim)
+		lost = true;
+
+	if (x + dim > player.x && x < player.x + player.width && y + dim > player.y)
 		vy *= -1;
-	}
 }
 
 void ball::render(SDL_Renderer* renderer) {
 	SDL_Rect rect = {x,y,dim,dim};
-	SDL_SetRenderDrawColor(renderer, 0xFF, 0x00, 0x00, 0xFF);
+	SDL_SetRenderDrawColor(renderer, 0xFF, 0xFF, 0xFF, 0xFF);
 	SDL_RenderFillRect(renderer, &rect);
 }
 
@@ -150,6 +154,14 @@ int main() {
 		ball.render(renderer);
 
 		SDL_RenderPresent(renderer);
+
+		if (ball.lost) {
+			run = false;
+			printf("YOU LOST !!");
+
+			SDL_DestroyWindow(window);
+			SDL_Quit();
+		}
 	}
 
 	// Destroy window and quit
