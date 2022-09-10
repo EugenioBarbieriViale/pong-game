@@ -1,5 +1,5 @@
-SRC = collision.cpp
-EXEC = collision
+SRC = game.cpp
+EXEC = game
 CC = g++
 
 all: $(SRC)
