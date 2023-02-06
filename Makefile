@@ -1,9 +1,9 @@
-SRC = game.cpp
-EXEC = game
-CC = g++
+NAME=game
 
 all: $(SRC)
-	$(CC) $(SRC) `sdl2-config --cflags --libs` -o $(EXEC)
+	g++ -c $(NAME).cpp
+	g++ $(NAME).o -o sfml-app -lsfml-graphics -lsfml-window -lsfml-system
 
 clean:
-	rm $(EXEC)
+	rm $(NAME).o
+	rm sfml-app
