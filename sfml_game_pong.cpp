@@ -1,52 +1,58 @@
 #include <SFML/Graphics.hpp>
 
-int const width = 900;
-int const height = 650;
+float const width = 900;
+float const height = 650;
 
-class player {
-	public:
-		player(width, height);
-
-		float vx = 5;
-		float vy = 5;
-};
-
-player::player(int width, int height) {
-	sf::RectangleShape rect;
-	sf::Vector2f pos(width/2 - 50, height/2 + 40);
-	rect.setPosition(pos);
-	rect.setSize(sf::Vector2f(100,20));
+int check_collision(sf::Vector2f player, sf::Vector2f ball) {
+	if (ball.x + 40 > player.x && ball.x < player.x + 100 && ball.y + 40 >= player.y)
+		return 1;
+	return 0;
 }
-
-void player::move(sf::Event event) {
-	if (sf::Keyboard::isKeyPressed(sf::Keyboard::A)) pos.x -= vx;
-	if (sf::Keyboard::isKeyPressed(sf::Keyboard::D)) pos.x += vx;
-	rect.setPosition(pos);
-}
-
-void player::show(sf::RenderWindow window) {
-	window.clear();
-	window.draw(rect);
-	window.display();
-}
-
 
 int main() {
 	sf::RenderWindow window(sf::VideoMode(width,height), "Game");
 	window.setFramerateLimit(60);
 
-	player player;
+	// Player
+	float vp = 5;
+
+	sf::RectangleShape player;
+	sf::Vector2f pos1 = sf::Vector2f(width/2 - 50, height - 40);
+	player.setPosition(pos1);
+	player.setSize(sf::Vector2f(100,20));
+
+	// Ball
+	float vx = 3;
+	float vy = 3;
+
+	sf::RectangleShape ball;
+	sf::Vector2f pos2 = sf::Vector2f(300,200);
+	ball.setPosition(pos2);
+	ball.setSize(sf::Vector2f(40,40));
+
 
 	while (window.isOpen()) {
 		sf::Event event;
 		while (window.pollEvent(event)) {
 			if (event.type == sf::Event::Closed) window.close();
-			player.move(event);
+			if (sf::Keyboard::isKeyPressed(sf::Keyboard::A)) pos1.x -= vp;
+			if (sf::Keyboard::isKeyPressed(sf::Keyboard::D)) pos1.x += vp;
 		}
-		/* if (pos.x <= 0 || pos.x+100 >= width) vx *= -1; */
-		/* if (pos.y <= 0 || pos.y+100 >= height) vy *= -1; */
+		player.setPosition(pos1);
 
-		player.show();
+		pos2.x += vx;
+		pos2.y += vy;
+
+		if (pos2.x <= 0 || pos2.x+40 >= width) vx *= -1;
+		if (pos2.y <= 0 || check_collision(pos1, pos2)) vy *= -1;
+		if (pos2.y >= height) window.close();
+		
+		ball.setPosition(pos2);
+
+		window.clear();
+		window.draw(ball);
+		window.draw(player);
+		window.display();
 	}
 
     return 0;
